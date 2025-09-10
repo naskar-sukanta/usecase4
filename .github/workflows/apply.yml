@@ -18,7 +18,7 @@
                 with:
                   tflint_version: latest
               - name: Run TFLint
-                run: tflint
+                run: tflint --format=json
                 continue-on-error: true
 
           deploy:
