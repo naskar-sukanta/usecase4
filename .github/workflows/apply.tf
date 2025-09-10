@@ -1,0 +1,52 @@
+        name: Deploy 2tier App
+
+        on:
+          workflow_dispatch:
+          
+        permissions:
+            id-token: write   # Required for OIDC
+            contents: read    # Required to clone the repo
+
+        jobs:
+          tflint-checks:
+            runs-on: ubuntu-latest
+            steps:
+              - name: Checkout code
+                uses: actions/checkout@v4
+              - name: Setup TFLint
+                uses: terraform-linters/setup-tflint@v3
+                with:
+                  tflint_version: latest
+              - name: Run TFLint
+                run: tflint
+
+          deploy:
+              runs-on: ubuntu-latest
+              needs: tflint-checks
+              steps:
+                - name: Checkout code
+                  uses: actions/checkout@v4
+
+                - name: Configure AWS credentials
+                  uses: aws-actions/configure-aws-credentials@v4
+                  with:
+                    role-to-assume: arn:aws:iam::897722687643:role/github_actions
+                    aws-region: us-east-1
+
+                - name: Setup Terraform
+                  uses: hashicorp/setup-terraform@v3
+
+                - name: Terraform fmt
+                  run: terraform fmt -check -diff
+
+                - name: Terraform Init
+                  run: terraform init
+
+                - name: Terraform validate
+                  run: terraform validate
+
+                - name: Terraform Plan
+                  run: terraform plan
+
+                - name: Terraform Apply
+                  run: terraform apply -auto-approve
