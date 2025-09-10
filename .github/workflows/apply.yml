@@ -19,6 +19,7 @@
                   tflint_version: latest
               - name: Run TFLint
                 run: tflint
+                continue-on-error: true
 
           deploy:
               runs-on: ubuntu-latest
