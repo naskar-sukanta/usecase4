@@ -1,4 +1,4 @@
-        name: Deploy 2tier App
+        name: Deploy Devlake
 
         on:
           workflow_dispatch:
